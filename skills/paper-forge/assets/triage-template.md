@@ -2,51 +2,51 @@
 
 ## Paper Problem
 
-Unknown.
+unknown_from_pdf_only.
 
-Source locator: Unknown.
+Source locator: paper_not_reported.
 
 ## Why The Problem Matters
 
-Unknown.
+unknown_from_pdf_only.
 
-Source locator: Unknown.
+Source locator: paper_not_reported.
 
 ## Claimed Contributions
 
-- Unknown.
+- not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Contribution Type
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Difference From Prior Work
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Real Technical Increment
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Implication If True
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Relevance To User Profile
 
-Unknown.
+not_verified_in_alpha.
 
-Source basis: Profile inference plus paper evidence. Paper source locator: Unknown.
+Source basis: Profile inference plus paper evidence. Paper source locator: unknown_from_pdf_only.
 
 ## Recommendation
 
@@ -56,14 +56,14 @@ Source basis: Triage judgment from available source material and Profile. Paper 
 
 ## Three Highest-Priority Places To Inspect
 
-1. Unknown.
-2. Unknown.
-3. Unknown.
+1. unavailable_without_repo_check.
+2. unknown_from_pdf_only.
+3. not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Information Gaps And Uncertainty
 
-- Unknown.
+- unavailable_without_repo_check.
 
-Source locator: Unknown.
+Source locator: paper_not_reported.

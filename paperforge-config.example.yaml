@@ -1,0 +1,45 @@
+zotero:
+  enabled: true
+  integration_mode: "local_api"
+  collection_name: "PaperForge Inbox"
+  pending_tag: "paperforge:pending"
+  processed_tag: "paperforge:processed"
+  failed_tag: "paperforge:failed"
+  data_directory: "<your-zotero-data-directory>"
+  local_api_url: "http://127.0.0.1:23119/api/users/0"
+
+workspace:
+  root: "<your-paperforge-data-directory>/workspace"
+  inbox: "<your-paperforge-data-directory>/workspace/inbox"
+  processing: "<your-paperforge-data-directory>/workspace/processing"
+  cache: "<your-paperforge-data-directory>/workspace/cache"
+  failed: "<your-paperforge-data-directory>/workspace/failed"
+  archive: "<your-paperforge-data-directory>/workspace/archive"
+  logs: "<your-paperforge-data-directory>/workspace/logs"
+
+obsidian:
+  vault_path: "<your-obsidian-vault>"
+  papers_root: "Papers"
+  global_concepts_root: "Global Concepts"
+  projects_root: "Projects"
+  reviews_root: "Reviews"
+  templates_root: "Templates"
+  assets_root: "Assets"
+
+language:
+  default_output_language: "auto"
+  obsidian_note_language: "en"
+  fallback_output_language: "en"
+  bilingual_separator: " | "
+
+naming:
+  folder_pattern: "{import_date}__{short_title}__{stable_key}"
+  home_note_pattern: "{import_date}__{short_title}__{stable_key}.md"
+  sanitize_for_windows: true
+  max_short_title_length: 50
+
+safety:
+  never_modify_zotero_data_directory: true
+  never_overwrite_user_authored_notes: true
+  require_confirmation_before_force_overwrite: true
+  create_versions_before_regeneration: true

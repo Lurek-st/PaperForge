@@ -10,8 +10,8 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from lib.ids import derive_identity, folder_name  # noqa: E402
 from lib.paths import asset_path, default_workspace_root  # noqa: E402
-from lib.slug import dated_slug  # noqa: E402
 
 
 TEMPLATES = {
@@ -49,6 +49,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Initialize a Paper Forge local paper workspace.")
     parser.add_argument("source", nargs="?", default="", help="Paper source path, URL, DOI, or arXiv identifier.")
     parser.add_argument("--title", default="", help="Paper title used to generate the workspace slug.")
+    parser.add_argument("--zotero-key", default="", help="Stable Zotero item key for the paper.")
+    parser.add_argument("--doi", default="", help="DOI fallback identifier when a Zotero key is unavailable.")
+    parser.add_argument("--arxiv-id", default="", help="arXiv ID fallback identifier when a Zotero key is unavailable.")
+    parser.add_argument("--year", default="", help="Publication year used for hash fallback.")
     parser.add_argument("--workspace-root", type=Path, default=None, help="Root directory for generated paper workspaces.")
     parser.add_argument("--workspace", type=Path, default=None, help="Explicit workspace path to initialize.")
     parser.add_argument("--mode", choices=["screen", "deep", "recall"], default="deep", help="Output set to initialize.")
@@ -103,11 +107,15 @@ def load_template(relative_output: str, source: str) -> str:
     return text
 
 
-def run_state_content(mode: str, slug: str, source: str) -> str:
+def run_state_content(mode: str, slug: str, source: str, metadata: dict) -> str:
+    identity = derive_identity(metadata)
     data = {
         "schema_version": 1,
         "mode": mode,
         "paper_slug": slug,
+        "paper_id": identity.paper_id,
+        "id_strategy": identity.id_strategy,
+        "zotero_item_key": identity.zotero_item_key,
         "source_input": source,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "initialized",
@@ -140,6 +148,9 @@ def print_reading_guidance(workspace: Path, mode: str) -> None:
     print("Reading guide:")
     print(f"- Workspace entry point: {workspace / 'README_FOR_READING.md'}")
     print("- Paper Forge outputs are Markdown reading artifacts, not a web UI.")
+    print("- Zotero remains the source of truth for original PDFs and standard metadata.")
+    print("- Do not point Paper Forge at Zotero storage/ or zotero.sqlite as a long-term workspace.")
+    print("- Prefer moving or renaming generated notes inside Obsidian so links can be maintained.")
     print("- Open the numbered Markdown files with VS Code, Codex file view, Obsidian, Typora, or any Markdown reader.")
     print("- Primary files to read:")
     for relative in numbered_outputs_for_mode(mode):
@@ -150,7 +161,18 @@ def print_reading_guidance(workspace: Path, mode: str) -> None:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     title = args.title or infer_title(args.source)
-    slug = dated_slug(title)
+    metadata = {
+        "title": title,
+        "zotero_item_key": args.zotero_key,
+        "doi": args.doi,
+        "arxiv_id": args.arxiv_id,
+        "year": args.year,
+    }
+    slug = folder_name(
+        metadata,
+        pattern="{import_date}__{short_title}__{stable_key}",
+        max_short_title_length=80,
+    )
     workspace = args.workspace or (args.workspace_root or default_workspace_root()) / slug
 
     planned: list[str] = []
@@ -167,10 +189,11 @@ def main(argv: list[str] | None = None) -> int:
         content = load_template(output, args.source)
         planned.append(write_if_missing(workspace / output, content, args.dry_run))
 
-    planned.append(write_if_missing(workspace / "run_state.json", run_state_content(args.mode, slug, args.source), args.dry_run))
+    planned.append(write_if_missing(workspace / "run_state.json", run_state_content(args.mode, slug, args.source, metadata), args.dry_run))
 
     print(f"Paper Forge workspace: {workspace}")
     print(f"Mode: {args.mode}")
+    print(f"Paper ID: {derive_identity(metadata).paper_id}")
     if args.dry_run:
         print("Dry run: no files were written.")
     for item in planned:

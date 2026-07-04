@@ -2,50 +2,50 @@
 
 ## One-Sentence Conclusion
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Problem
 
-Unknown.
+unknown_from_pdf_only.
 
-Source locator: Unknown.
+Source locator: paper_not_reported.
 
 ## Real Technical Increment
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Strongest Evidence
 
-Unknown.
+not_verified_in_alpha.
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Most Important Evidence Gaps
 
-Unknown.
+unavailable_without_repo_check.
 
-Source locator: Unknown.
+Source locator: paper_not_reported.
 
 ## Three Credibility Dimensions
 
-- Internal evidence credibility: Unknown
-- External reproducibility readiness: Unknown
-- Engineering transfer credibility: Unknown
+- Internal evidence credibility: not_verified_in_alpha
+- External reproducibility readiness: unavailable_without_repo_check
+- Engineering transfer credibility: paper_not_reported
 
-Source locator: Unknown.
+Source locator: unknown_from_pdf_only.
 
 ## Transfer Value For The User
 
-Unknown.
+not_verified_in_alpha.
 
-Source basis: Profile inference plus paper evidence. Paper source locator: Unknown.
+Source basis: Profile inference plus paper evidence. Paper source locator: unknown_from_pdf_only.
 
 ## Recommendation
 
 Recommendation: investigate a specific uncertainty.
 
-Source basis: Final judgment from numbered analysis files. Paper source locator: Unknown.
+Source basis: Final judgment from numbered analysis files. Paper source locator: unknown_from_pdf_only.

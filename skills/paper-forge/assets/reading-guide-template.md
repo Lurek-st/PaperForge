@@ -4,6 +4,14 @@
 
 Paper Forge outputs are Markdown reading artifacts, not a web UI.
 
+For Zotero -> PaperForge -> Obsidian workflows, the preferred long-term reading entry point is the Obsidian paper archive home note:
+
+```text
+Papers/YYYY-MM-DD__Short_Title__StableKey/YYYY-MM-DD__Short_Title__StableKey.md
+```
+
+Zotero remains the source of truth for original PDFs and standard metadata. PaperForge does not modify Zotero `storage/` or `zotero.sqlite`.
+
 For normal reading, focus on the numbered files:
 
 ```text
@@ -51,3 +59,7 @@ Non-numbered files are mainly for traceability:
 - `source/source_manifest.md`: what source material was available.
 - `analysis/profile_snapshot.md`: which Profile priorities were used.
 - `run_state.json`: script state for structural validation.
+
+## Obsidian Movement Rule
+
+If you move or rename generated notes, prefer doing it inside Obsidian so links can be maintained. Archive a paper by moving the whole paper folder, not by scattering its internal files.

@@ -1,45 +1,121 @@
-# 架构 / Architecture
+# Architecture / 架构
 
-## 中文
+## Overview / 概览
 
-Paper Forge 的架构刻意保持小而本地化：
+PaperForge is a local-first workflow:
 
-- 一个核心 Skill：`skills/paper-forge/`。
-- 一个用户拥有的长期 Profile：`~/.paper-forge/profile.md`。
-- 每篇论文一个本地工作区：`~/paper-forge-workspace/papers/<date_slug>/`。
-- Markdown 产物用于可读、可审计、可手动修改的分析结果。
-- 每个工作区包含 `README_FOR_READING.md`，提醒用户主要阅读 `01` 到 `08` 的编号 Markdown 文件。
-- 少量 Python 标准库脚本用于初始化和结构验证。
+```text
+Zotero Desktop
+-> PaperForge workspace
+-> Codex / Agent deep reading
+-> Obsidian knowledge archive
+```
 
-主要目录：
+PaperForge is not a cloud service, not a Zotero database replacement, and not an Obsidian vault manager. Zotero remains the source of truth for PDFs and bibliographic metadata. PaperForge owns the structured analysis workspace. Obsidian is the long-term note network.
 
-- `skills/paper-forge/SKILL.md`：触发规则、三种模式、Profile、语言、安全和输出要求。
-- `skills/paper-forge/assets/`：Profile 和分析产物模板。
-- `skills/paper-forge/references/`：工作流、判据、安全和输出契约。
-- `skills/paper-forge/scripts/`：确定性辅助脚本。
-- `docs/`：面向 GitHub 用户的中英文文档。
-- `tests/`：不依赖网络、真实 PDF、API key 或真实 Profile 的标准库测试。
+PaperForge 是本地优先的论文分析工作流，不是云服务，也不是 Zotero 数据库替代品。Zotero 负责 PDF 与标准元数据，PaperForge 负责结构化分析工作区，Obsidian 负责长期知识沉淀。
 
-Paper Forge 不包含 Plugin manifest、MCP server、Hook、数据库、浏览器自动化、云服务或多 Agent 编排。分析质量来自 Skill 指令、用户提供的论文材料、Profile 和模型判断；结构验证检查文件结构、必要字段和 source locator 脚手架，不证明论文结论正确。
+## Components / 核心组件
 
-## English
+- `skills/paper-forge/`
+  Canonical Skill, scripts, templates, and reference contracts.
+- `~/.paper-forge/profile.md`
+  User-owned research Profile. This is personal local data and should not be committed.
+- `~/.paper-forge/config.yaml`
+  Local configuration. Use [`paperforge-config.example.yaml`](../paperforge-config.example.yaml) as the starting template.
+- `<your-paperforge-data-directory>/workspace/`
+  User workspace root for `inbox`, `processing`, `cache`, `failed`, `archive`, and `logs`.
+- `<your-obsidian-vault>/Papers/`
+  Long-term Obsidian export destination.
 
-Paper Forge is intentionally small and local-first:
+## Data Boundaries / 数据边界
 
-- One core Skill: `skills/paper-forge/`.
-- One user-owned persistent Profile: `~/.paper-forge/profile.md`.
-- One local workspace per paper: `~/paper-forge-workspace/papers/<date_slug>/`.
-- Markdown outputs for readable, auditable, manually editable analysis.
-- Each workspace includes `README_FOR_READING.md`, reminding users to read numbered Markdown files `01` through `08`.
-- A few Python standard-library scripts for initialization and structural validation.
+- Zotero Local API is a read-only input chain in PaperForge's current design.
+- PaperForge must not write to `zotero.sqlite` or modify Zotero-managed `storage/`.
+- PaperForge should not assume user data lives inside the repository.
+- The repository should contain code, templates, tests, and anonymized examples only.
+- PDF missing means `metadata_only`; PaperForge must not invent full-text conclusions.
+- Existing Obsidian notes are protected by default and should not be silently renamed or overwritten.
 
-Main directories:
+## Workspace Layers / 工作区分层
 
-- `skills/paper-forge/SKILL.md`: trigger rules, three modes, Profile, language, security, and output requirements.
-- `skills/paper-forge/assets/`: Profile and analysis output templates.
-- `skills/paper-forge/references/`: workflow, rubrics, safety rules, and output contract.
-- `skills/paper-forge/scripts/`: deterministic helper scripts.
-- `docs/`: bilingual documentation for GitHub users.
-- `tests/`: standard-library tests that do not require network access, real PDFs, API keys, or a real Profile.
+### 1. Zotero layer
 
-Paper Forge contains no Plugin manifest, MCP server, Hook, database, browser automation, cloud service, or multi-agent orchestration. Analysis quality comes from Skill instructions, user-provided paper material, the Profile, and model judgment; structural validation checks file structure, required fields, and source locator scaffolding, but does not prove that paper conclusions are correct.
+- Stores the original PDF, citation data, creator list, DOI, URL, and other source metadata.
+- Owns attachment storage and collection organization.
+
+### 2. PaperForge workspace layer
+
+Typical structure:
+
+```text
+<your-paperforge-data-directory>/workspace/
+├── inbox/
+├── processing/
+├── cache/
+├── failed/
+├── archive/
+└── logs/
+```
+
+Each paper workspace holds the source manifest, profile snapshot, and the deep-reading artifact chain:
+
+```text
+README_FOR_READING.md
+source/source_manifest.md
+analysis/profile_snapshot.md
+analysis/01_triage.md
+analysis/02_claim_ledger.md
+analysis/03_contribution_map.md
+analysis/04_mechanism.md
+analysis/05_evidence_audit.md
+analysis/06_transfer_analysis.md
+analysis/07_final_brief.md
+learning/08_recall_log.md
+```
+
+### 3. Obsidian layer
+
+Typical archive structure:
+
+```text
+<your-obsidian-vault>/Papers/<paper-folder>/
+├── <paper-folder>.md
+├── 00 - ...
+├── 01 - ...
+├── 02 - ...
+├── 03 - ...
+├── 04 - ...
+├── 05 - ...
+├── paperforge-manifest.json
+└── Attachments/
+```
+
+The numbered notes mirror PaperForge's reasoning chain. The home note, numbered filenames, page titles, and navigation text should stay semantically aligned.
+
+## Language Handling / 语言处理
+
+PaperForge supports `zh`, `en`, `bilingual`, and `auto`.
+
+Priority:
+
+```text
+CLI explicit arguments
+> profile.md preferences
+> config.yaml defaults
+> auto fallback
+```
+
+Current language settings affect:
+
+- Obsidian numbered filenames
+- Obsidian page headings
+- Home note navigation labels
+- Workspace guidance recorded for deep analysis
+
+## Safety Model / 安全策略
+
+- Preserve normal Unicode author names end to end.
+- Use explicit UTF-8 for file I/O and local config/profile parsing.
+- Never auto-migrate legacy `00.md` to `05.md` archives without user action.
+- Never upload user PDFs, private vault notes, or personal Profile data by default.

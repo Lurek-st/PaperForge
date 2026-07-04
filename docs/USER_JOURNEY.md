@@ -1,77 +1,162 @@
-# 用户旅程 / User Journey
+# User Journey / 用户路径
 
-## 中文
+## Overview / 概览
 
-## 阶段 1：发现项目
+PaperForge is designed for a real reading loop, not a one-click "paper solved" promise.
 
-用户可能通过 GitHub、Bilibili、YouTube、AI Skills 合集、朋友、同学、老师或社交媒体发现 Paper Forge。README 首屏应说明输入和输出：
+```text
+Save paper in Zotero
+-> initialize PaperForge workspace
+-> run deep reading with Codex / Agent
+-> export structured notes to Obsidian
+-> extend with your own links, ideas, and experiments
+```
 
-输入包括本地 PDF、公开 PDF URL、arXiv 链接或编号、DOI、论文落地页。
+## 1. Prepare your tools / 准备工具
 
-输出包括论文真正解决的问题、真实贡献、旧方法为什么不足、机制与因果链、证据审计、局限与不确定性、与用户研究方向的相关性、费曼式主动回忆。
+Required:
 
-## 阶段 2：先设置 Profile
+- Zotero Desktop
+- Obsidian
+- Python environment for PaperForge
+- Codex / Agent environment for the deep workflow
 
-安装说明之前，用户应先看到 `Step 0 - Set Your Persistent Research Profile`。Paper Forge 可以无 Profile 运行，但 Profile 能显著提升相关性和迁移价值判断。Profile 存在 `~/.paper-forge/profile.md`，属于用户，不是模型记忆，也不在 Skill 包内。
+Optional:
 
-## 阶段 3：安装
+- Zotero Connector
+- Git or GitHub Desktop
+- VS Code
 
-用户可以复制仓库 URL 给 Codex，请 Codex 安装单一 `paper-forge` Skill。安装 Agent 应先检查 README、Skill 目录、`SKILL.md` 和脚本，说明将安装哪些文件，不安装 Plugin、MCP、Hook、浏览器扩展、系统服务或无关依赖。
+## 2. Configure your local data locations / 配置本地目录
 
-## 阶段 4：安装后 Profile 引导
+Keep these separate:
 
-安装完成后，Agent 应报告 Skill 安装目录、版本或 Git commit、调用方式、`~/.paper-forge/profile.md` 是否存在、Profile 作用，以及如何现在配置它。若 Profile 不存在，应提供对话设置、手动编辑或暂时跳过三种选择。
+```text
+<project-root>                     source code
+<your-paperforge-data-directory>   local PaperForge workspace + profile
+<your-zotero-data-directory>       Zotero data
+<your-obsidian-vault>              Obsidian vault
+```
 
-## 阶段 5：Profile 设置
+Do not place private PDFs, analysis outputs, or your real `profile.md` inside the repository.
 
-用户可以说“帮我设置 Paper Forge 的 Profile”“展示我的 Paper Forge Profile”“将默认输出语言设为中文”等。Agent 必须只询问论文分析相关信息，先展示拟写入内容和路径，等待明确确认后才写入，并在更新已有 Profile 前创建备份。
+## 3. Create your Research Profile / 创建 Research Profile
 
-## 阶段 6：Screen
+Copy [`profile.example.md`](../profile.example.md) to:
 
-用户运行 `$paper-forge screen ./paper.pdf`。Paper Forge 创建工作区、`README_FOR_READING.md`、来源清单和筛选结论，说明是否建议 deep、skip 或 conditional。运行结束时，Agent 应提醒用户主要阅读编号 Markdown 文件，并可用 VS Code、Codex 文件视图、Obsidian、Typora 或其他 Markdown 阅读器打开。
+```text
+~/.paper-forge/profile.md
+```
 
-## 阶段 7：Deep
+Then edit:
 
-用户运行 `$paper-forge deep ./paper.pdf`。Paper Forge 依次完成来源预检、Profile、语言选择、论文类型路由、主张账本、贡献图谱、机制图、证据审计、迁移分析、最终简报和结构验证。`01` 到 `07` 的编号文件应包含 source locator 或 source basis，帮助用户回到原论文定位页码、章节、图表或实验。
+- research identity
+- research interests
+- priority questions
+- application context
+- output language and detail preferences
 
-## 阶段 8：Recall
+## 4. Check the environment / 环境检查
 
-Deep 完成后，Paper Forge 邀请用户运行 `$paper-forge recall`。Recall 一次只问一个问题，先指出用户答案缺失的逻辑，不自动透露完整答案；只有用户明确要求时才揭示答案，并写入 `learning/08_recall_log.md`。问题应记录来源基础；揭示完整答案时应带 source locator。
+```bash
+python skills/paper-forge/scripts/paperforge.py init
+python skills/paper-forge/scripts/paperforge.py doctor
+```
 
-## English
+You should see guidance about:
 
-## Stage 1: Discovery
+- Zotero as the metadata and PDF source
+- PaperForge as the analysis workspace
+- Obsidian as the long-term export target
+- local configuration and safety boundaries
 
-Users may discover Paper Forge through GitHub, Bilibili, YouTube, AI Skills collections, friends, labmates, teachers, or social media. The README first screen should explain inputs and outputs:
+## 5. Ingest metadata / 导入元数据
 
-Inputs include local PDFs, public PDF URLs, arXiv links or identifiers, DOIs, and paper landing pages.
+Example:
 
-Outputs include the real paper problem, real contribution, why prior methods were insufficient, mechanism and causal chain, evidence audit, limitations and uncertainty, relevance to the user's research direction, and Feynman-style active recall.
+```bash
+python skills/paper-forge/scripts/paperforge.py ingest-zotero
+```
 
-## Stage 2: Profile First
+Or ingest one anonymized example item:
 
-Before installation instructions, users should see `Step 0 - Set Your Persistent Research Profile`. Paper Forge can run without a Profile, but a Profile substantially improves relevance and transfer analysis. The Profile lives at `~/.paper-forge/profile.md`, belongs to the user, is not model memory, and is not stored inside the Skill package.
+```bash
+python skills/paper-forge/scripts/paperforge.py ingest-zotero --metadata example-metadata.json
+```
 
-## Stage 3: Installation
+If the paper has no usable PDF, PaperForge records a `metadata_only` state instead of fabricating a full-text assessment.
 
-The user can paste the repository URL into Codex and ask Codex to install the single `paper-forge` Skill. The installing agent should inspect README, the Skill directory, `SKILL.md`, and scripts first, explain which files will be installed, and avoid installing any Plugin, MCP server, Hook, browser extension, system service, or unrelated dependency.
+## 6. Initialize the workspace / 初始化工作区
 
-## Stage 4: Post-Install Profile Onboarding
+```bash
+python skills/paper-forge/scripts/paperforge.py init-workspace zotero:EXAMPLE123
+```
 
-After installation, the agent should report the installed Skill directory, version or Git commit, invocation method, whether `~/.paper-forge/profile.md` exists, what the Profile is for, and how to configure it now. If no Profile exists, it should offer conversational setup, manual editing, or skipping for now.
+This prepares the core analysis files under `processing/` for that paper.
 
-## Stage 5: Profile Setup
+## 7. Run the deep workflow / 执行 deep 工作流
 
-Users may say "Set up my Paper Forge profile", "Show my Paper Forge profile", or "Set Paper Forge output language to Chinese". The agent must ask only for paper-analysis-relevant information, show the exact proposed content and path before writing, wait for explicit approval, and create a backup before updating an existing Profile.
+```bash
+python skills/paper-forge/scripts/paperforge.py deep zotero:EXAMPLE123
+```
 
-## Stage 6: Screen
+If the deep artifacts are still placeholders, PaperForge will report `analysis_incomplete`. That is expected until Codex / Agent fills the files with source-located content.
 
-The user runs `$paper-forge screen ./paper.pdf`. Paper Forge creates a workspace, `README_FOR_READING.md`, source manifest, and triage report, then recommends `deep`, `skip`, or `conditional`. At the end, the agent should remind the user to read the numbered Markdown files and open them with VS Code, Codex file view, Obsidian, Typora, or another Markdown reader.
+## 8. Ask Codex / Agent to read deeply / 让 Codex 深读
 
-## Stage 7: Deep
+Example prompt:
 
-The user runs `$paper-forge deep ./paper.pdf`. Paper Forge performs source preflight, Profile loading, language selection, paper type routing, claim ledger, contribution map, mechanism diagram, evidence audit, transfer analysis, final brief, and structural validation. Numbered files `01` through `07` should include source locators or source basis fields so the user can return to paper pages, sections, figures, tables, or experiments.
+```text
+使用 PaperForge deep 工作流分析 zotero:EXAMPLE123。
+读取 PDF 与工作区模板，填写 analysis/*.md。
+所有关键判断必须标注来源位置；无法确认的内容明确写 Unknown。
+```
 
-## Stage 8: Recall
+## 9. Re-run export to Obsidian / 重新导出到 Obsidian
 
-After Deep completes, Paper Forge invites the user to run `$paper-forge recall`. Recall asks one question at a time, points out missing logic first, does not reveal the full answer automatically, reveals only when explicitly asked, and writes to `learning/08_recall_log.md`. Questions should record their source basis; revealed answers should include source locators.
+```bash
+python skills/paper-forge/scripts/paperforge.py export-obsidian zotero:EXAMPLE123 --obsidian-language zh
+```
+
+Result:
+
+```text
+<your-obsidian-vault>/Papers/<paper-folder>/
+├── <paper-folder>.md
+├── 00 - ...
+├── 01 - ...
+├── 02 - ...
+├── 03 - ...
+├── 04 - ...
+└── 05 - ...
+```
+
+Recommended reading order:
+
+```text
+Home -> 01 -> 02 -> 03 -> 04 -> 05
+Read 00 when you need metadata, source links, or profile context.
+```
+
+## 10. Continue personal knowledge work / 继续沉淀个人知识
+
+Inside Obsidian you can:
+
+- add links to project notes
+- add your own experiment ideas
+- write reflections and contradictions
+- move the whole paper folder inside the vault
+
+If you move folders inside Obsidian, rebuild the index when needed:
+
+```bash
+python skills/paper-forge/scripts/paperforge.py reindex
+python skills/paper-forge/scripts/paperforge.py repair-links
+```
+
+## What PaperForge will not do / PaperForge 不会做什么
+
+- It will not auto-write Zotero tags in the current release.
+- It will not modify Zotero's database or attachment storage.
+- It will not overwrite existing Obsidian notes by default.
+- It will not claim deep full-text understanding when the PDF is missing.

@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+from .config import parse_simple_yaml
 from .paths import asset_path, default_profile_path
 
 
@@ -19,6 +20,10 @@ class ProfileInitResult:
 
 def template_path() -> Path:
     return asset_path("profile-template.md")
+
+
+def example_profile_path() -> Path:
+    return Path(__file__).resolve().parents[4] / "profile.example.md"
 
 
 def create_profile_if_missing(
@@ -75,3 +80,41 @@ def analysis_relevant_snapshot(profile_text: str, source_path: Path) -> str:
         "## Analysis-Relevant Profile Content\n\n"
         f"{body}\n"
     )
+
+
+PROFILE_LANGUAGE_DEFAULTS = {
+    "default_output_language": "auto",
+    "obsidian_note_language": "auto",
+    "preferred_detail_level": "detailed",
+}
+
+
+def _frontmatter(text: str) -> str:
+    if not text.startswith("---\n"):
+        return ""
+    _, _, remainder = text.partition("---\n")
+    frontmatter, separator, _ = remainder.partition("\n---")
+    return frontmatter if separator else ""
+
+
+def load_profile_preferences(target: Optional[Path] = None) -> dict[str, str]:
+    profile_path = target or default_profile_path()
+    preferences = dict(PROFILE_LANGUAGE_DEFAULTS)
+    if not profile_path.exists():
+        return preferences
+
+    text = profile_path.read_text(encoding="utf-8")
+    frontmatter = _frontmatter(text)
+    if not frontmatter:
+        return preferences
+
+    try:
+        data = parse_simple_yaml(frontmatter)
+    except ValueError:
+        return preferences
+
+    for key in PROFILE_LANGUAGE_DEFAULTS:
+        value = data.get(key)
+        if value not in {None, ""}:
+            preferences[key] = str(value)
+    return preferences

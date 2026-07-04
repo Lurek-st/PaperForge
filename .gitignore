@@ -1,12 +1,68 @@
-.paper-forge/
-paper-forge-workspace/
+# Python
 __pycache__/
-*.pyc
-.venv/
-.env
+*.py[cod]
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .coverage
 htmlcov/
 dist/
 build/
 *.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+token.json
+
+# Local PaperForge user data
+processing/
+inbox/
+output/
+outputs/
+runtime/
+cache/
+logs/
+tmp/
+local-data/
+user-data/
+paper-forge-workspace/
+paperforge-workspace/
+paperforge-workspace-manifest.json
+
+# Local profiles and config
+profile.md
+profiles/local/
+.paper-forge/
+
+# Papers and Zotero local artifacts
+*.pdf
+*.epub
+*.sqlite
+*.sqlite-journal
+*.db
+zotero/
+zotero-export/
+zotero-cache/
+
+# Obsidian user vaults and generated notes
+.obsidian/
+obsidian-vault/
+vault/
+Papers/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

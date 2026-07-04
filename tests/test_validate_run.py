@@ -10,6 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "skills" / "paper-forge" / "scripts"
 INIT_WORKSPACE = SCRIPTS / "init_workspace.py"
 VALIDATE = SCRIPTS / "validate_run.py"
+sys.path.insert(0, str(SCRIPTS))
+
+from lib.validation import assess_analysis_completeness  # noqa: E402
 
 
 class ValidateRunTests(unittest.TestCase):
@@ -134,6 +137,36 @@ class ValidateRunTests(unittest.TestCase):
             state = json.loads(state_path.read_text(encoding="utf-8"))
             self.assertEqual(state["mode"], "deep")
             self.assertFalse(state["recall_started"])
+
+    def test_completeness_flags_template_workspace_as_incomplete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = self.make_workspace(Path(tmp), mode="deep")
+
+            result = assess_analysis_completeness(workspace)
+
+            self.assertFalse(result.complete)
+            self.assertEqual(result.status, "analysis_incomplete")
+            self.assertTrue(result.incomplete_files)
+
+    def test_completeness_passes_filled_source_located_workspace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = self.make_workspace(Path(tmp), mode="deep")
+            filled = {
+                "analysis/01_triage.md": "# Triage\n\n## Paper Problem\n\nA real problem. Source locator: Section 1.\n\n## Recommendation\n\ndeep. Source basis: Section 1.\n",
+                "analysis/02_claim_ledger.md": "# Claim Ledger\n\n## Claim Table\n\n| ID | Claim | Claim Type | Source Locator | Direct Evidence | Support Level | Limitations / Counterpoints |\n|---|---|---|---|---|---|---|\n| C1 | The method improves transfer | Author claim | Section 4 | Table 2 reports gains | Partial | Benchmark only |\n",
+                "analysis/03_contribution_map.md": "# Contribution Map\n\n## Core Sentence\n\nThe paper changes X to solve Y. Source locator: Section 3.\n\n## Counterfactual Sentence\n\nWithout X, the contribution is weaker. Source locator: Section 3.\n",
+                "analysis/04_mechanism.md": "# Mechanism Model\n\n## Mermaid Causal Chain\n\n```mermaid\nflowchart TD\nA --> B\n```\n\nSource locator: Section 3.\n",
+                "analysis/05_evidence_audit.md": "# Evidence Audit\n\n## Credibility Dimensions\n\n- Internal evidence credibility: moderate. Source locator: Table 2.\n- External reproducibility readiness: low. Source locator: Appendix A.\n- Engineering transfer credibility: uncertain. Source locator: Section 5.\n",
+                "analysis/06_transfer_analysis.md": "# Transfer Analysis\n\n## Relevance Layers\n\n- Industrial deployment relevance: uncertain. Source basis: Profile plus Section 5.\n",
+                "analysis/07_final_brief.md": "# Final Brief\n\n## One-Sentence Conclusion\n\nPromising but not deployment-ready. Source locator: Sections 4-5.\n\n## Recommendation\n\nDeep read only if transfer is relevant. Source basis: evidence audit.\n",
+            }
+            for relative, content in filled.items():
+                (workspace / relative).write_text(content, encoding="utf-8")
+
+            result = assess_analysis_completeness(workspace)
+
+            self.assertTrue(result.complete)
+            self.assertEqual(result.status, "deep_analysis_complete")
 
 
 if __name__ == "__main__":

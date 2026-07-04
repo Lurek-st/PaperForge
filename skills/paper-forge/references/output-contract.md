@@ -1,5 +1,64 @@
 # Output Contract
 
+Obsidian archive outputs for Zotero -> PaperForge -> Obsidian flows:
+
+```text
+Papers/<folder>/
+  <folder>.md
+  00 - Source, Metadata, Profile Snapshot.md
+  01 - Problem, Prior Limitation, Actual Contribution.md
+  02 - Mechanism, Method, Causal Chain.md
+  03 - Claims, Evidence, Limitations, Unproven Parts.md
+  04 - Transfer Analysis, User Research Relevance, Project Ideas.md
+  05 - Feynman Recall, Self-Explanation, Open Questions.md
+  paperforge-manifest.json
+  Attachments/
+```
+
+The archive folder and home note use:
+
+```text
+YYYY-MM-DD__Short_Title__StableKey
+```
+
+Stable key priority:
+
+```text
+Zotero Item Key -> DOI -> arXiv ID -> title + authors + year hash
+```
+
+Numbered reading documents:
+
+- `00 - Source, Metadata, Profile Snapshot.md`
+- `01 - Problem, Prior Limitation, Actual Contribution.md`
+- `02 - Mechanism, Method, Causal Chain.md`
+- `03 - Claims, Evidence, Limitations, Unproven Parts.md`
+- `04 - Transfer Analysis, User Research Relevance, Project Ideas.md`
+- `05 - Feynman Recall, Self-Explanation, Open Questions.md`
+
+`paperforge-manifest.json` must record `paper_id`, `id_strategy`, `zotero_item_key`, `folder_name`, `source_pdf_hash`, `metadata_hash`, `analysis_version`, `created_at`, `updated_at`, `status`, and `pdf_status`.
+
+Valid archive status values include:
+
+- `metadata_only`: PDF unavailable; do not claim full-text analysis.
+- `analysis_pending`: core workspace exists but has not been checked as complete.
+- `analysis_incomplete`: core workspace exists, but required deep artifacts still look like templates or lack source-located evidence.
+- `exported_from_deep_analysis`: deep artifacts passed deterministic completeness checks.
+
+Completeness checks are structural and evidence-discipline checks only. They do not prove semantic correctness.
+
+Generated cross-paper links must be full Vault-relative links, for example:
+
+```text
+[[Papers/2026-07-04__Example_Paper__EXAMPLE123/01 - Problem, Prior Limitation, Actual Contribution|01 - Problem, Prior Limitation, Actual Contribution]]
+```
+
+Do not generate ambiguous bare links such as `[[01]]`, and do not create per-paper `README.md` home files.
+
+If a paper archive already contains legacy bare filenames such as `00.md` through `05.md`, PaperForge must skip automatic migration by default and warn the user instead of silently renaming or overwriting notes.
+
+Author names imported from Zotero Local API must preserve Unicode through metadata JSON, workspace artifacts, and Obsidian Markdown. Explicit UTF-8 I/O is required; mojibake repair is allowed only for clearly suspicious strings and must not rewrite already-correct Unicode names.
+
 Required deep outputs:
 
 - `README_FOR_READING.md`

@@ -16,6 +16,16 @@ class ValidationResult:
         return not self.errors
 
 
+@dataclass
+class CompletenessResult:
+    workspace: Path
+    complete: bool
+    status: str
+    missing_files: list[str] = field(default_factory=list)
+    incomplete_files: list[str] = field(default_factory=list)
+    issues: list[str] = field(default_factory=list)
+
+
 REQUIRED_DIRS = ["source", "analysis", "learning"]
 
 READING_GUIDE_FILE = {
@@ -54,6 +64,24 @@ NUMBERED_SOURCE_LOCATOR_FILES = [
     "analysis/06_transfer_analysis.md",
     "analysis/07_final_brief.md",
 ]
+
+DEEP_COMPLETENESS_FILES = [
+    "analysis/01_triage.md",
+    "analysis/02_claim_ledger.md",
+    "analysis/03_contribution_map.md",
+    "analysis/04_mechanism.md",
+    "analysis/05_evidence_audit.md",
+    "analysis/06_transfer_analysis.md",
+    "analysis/07_final_brief.md",
+]
+
+GAP_MARKERS = (
+    "unknown",
+    "paper_not_reported",
+    "not_verified_in_alpha",
+    "unavailable_without_repo_check",
+    "unknown_from_pdf_only",
+)
 
 
 def _read(path: Path) -> str:
@@ -165,4 +193,86 @@ def validate_workspace(workspace: Path, mode: str = "deep") -> ValidationResult:
             result.errors.append("Recall Log missing source basis or source locator")
 
     result.warnings.append("Semantic accuracy not automatically verified")
+    return result
+
+
+def _substantive_line_count(text: str) -> int:
+    count = 0
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or line.startswith("|---"):
+            continue
+        count += 1
+    return count
+
+
+def _gap_marker_count(text: str) -> int:
+    lowered = text.lower()
+    return sum(lowered.count(marker) for marker in GAP_MARKERS)
+
+
+def _looks_like_placeholder(text: str) -> bool:
+    gap_markers = _gap_marker_count(text)
+    if gap_markers >= 3 and _substantive_line_count(text) < 12:
+        return True
+    if gap_markers >= 5 and _substantive_line_count(text) < 25:
+        return True
+    return False
+
+
+def _claim_ledger_has_real_claim(text: str) -> bool:
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        lowered = stripped.lower()
+        if "claim type" in lowered or "|---" in lowered:
+            continue
+        cells = [cell.strip().lower() for cell in stripped.strip("|").split("|")]
+        if len(cells) >= 4 and cells[1] not in {"unknown", ""} and cells[3] not in {"unknown", "source locator: unknown", ""}:
+            return True
+    return False
+
+
+def assess_analysis_completeness(workspace: Path) -> CompletenessResult:
+    """Check whether deep artifacts look filled enough to export as completed analysis.
+
+    This is not a semantic verifier. It only distinguishes a filled, source-located
+    workspace from an empty or mostly-template workspace.
+    """
+    workspace = workspace.resolve()
+    result = CompletenessResult(
+        workspace=workspace,
+        complete=False,
+        status="analysis_incomplete",
+    )
+    if not workspace.exists():
+        result.issues.append(f"Workspace does not exist: {workspace}")
+        return result
+
+    for relative in DEEP_COMPLETENESS_FILES:
+        path = workspace / relative
+        if not path.exists():
+            result.missing_files.append(relative)
+            result.issues.append(f"Missing deep artifact: {relative}")
+            continue
+        text = _read(path)
+        lowered = text.lower()
+        if _looks_like_placeholder(text):
+            result.incomplete_files.append(relative)
+            result.issues.append(f"Still looks like a template or placeholder: {relative}")
+        if not _has_source_locator(text):
+            result.incomplete_files.append(relative)
+            result.issues.append(f"Missing source locator/source basis language: {relative}")
+        if "analysis/02_claim_ledger.md" == relative and not _claim_ledger_has_real_claim(text):
+            result.incomplete_files.append(relative)
+            result.issues.append("Claim Ledger has no filled claim with a non-Unknown source locator")
+        if relative == "analysis/04_mechanism.md" and "```mermaid" not in lowered:
+            result.incomplete_files.append(relative)
+            result.issues.append("Mechanism artifact is missing a Mermaid causal chain")
+
+    result.incomplete_files = sorted(set(result.incomplete_files))
+    if not result.missing_files and not result.incomplete_files:
+        result.complete = True
+        result.status = "deep_analysis_complete"
     return result

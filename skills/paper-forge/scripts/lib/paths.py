@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 
@@ -14,6 +15,9 @@ def asset_path(name: str) -> Path:
 
 
 def default_profile_dir() -> Path:
+    override = os.getenv("PAPERFORGE_HOME")
+    if override:
+        return Path(override).expanduser()
     return Path.home() / ".paper-forge"
 
 
@@ -21,6 +25,13 @@ def default_profile_path() -> Path:
     return default_profile_dir() / "profile.md"
 
 
-def default_workspace_root() -> Path:
-    return Path.home() / "paper-forge-workspace" / "papers"
+def default_workspace_base() -> Path:
+    return default_profile_dir() / "workspace"
 
+
+def default_obsidian_export_root() -> Path:
+    return default_profile_dir() / "obsidian-vault"
+
+
+def default_workspace_root() -> Path:
+    return default_workspace_base() / "processing"
