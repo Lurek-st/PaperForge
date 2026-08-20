@@ -296,6 +296,42 @@ naming:
             self.assertIn("requested_output_language: en", export.stdout)
             self.assertIn("obsidian_note_language: bilingual", export.stdout)
 
+    def test_cli_does_not_crash_on_chinese_output_with_non_utf8_stdio(self):
+        # Regression test for Windows CI: with a non-UTF-8 pipe encoding such
+        # as cp1252, printing Chinese titles/paths used to raise
+        # UnicodeEncodeError and make the CLI exit non-zero. The CLI must
+        # degrade gracefully (backslashreplace) instead of crashing.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = self.write_config(tmpdir)
+            metadata_path = Path(tmpdir) / "metadata-zh.json"
+            metadata_path.write_text(
+                json.dumps(
+                    {
+                        "title": "中文论文标题测试",
+                        "authors": ["测试作者"],
+                        "year": 2026,
+                        "zotero_item_key": "ZH0001",
+                        "imported_at": "2026-07-04T10:00:00Z",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            env = os.environ.copy()
+            env["PYTHONUTF8"] = "0"
+            env["PYTHONIOENCODING"] = "cp1252:strict"
+
+            result = self.run_cli(
+                "--config", config_path, "ingest-zotero", "--metadata", metadata_path, env=env
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Paper package:", result.stdout)
+            package_root = Path(tmpdir) / "PaperForge" / "inbox"
+            self.assertTrue(package_root.exists())
+            self.assertTrue(any(package_root.iterdir()))
+
 
 if __name__ == "__main__":
     unittest.main()

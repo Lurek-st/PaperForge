@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">PaperForge — Zotero to AI Agent to Obsidian</title>
+  <desc id="desc">Local-first, traceable paper reading workflow with evidence review and source-located analysis.</desc>
+
+  <!-- Background -->
+  <rect width="1200" height="360" fill="#0d1117"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#161b22" stroke-width="1">
+    <line x1="0" y1="72" x2="1200" y2="72"/>
+    <line x1="0" y1="144" x2="1200" y2="144"/>
+    <line x1="0" y1="216" x2="1200" y2="216"/>
+    <line x1="0" y1="288" x2="1200" y2="288"/>
+    <line x1="200" y1="0" x2="200" y2="360"/>
+    <line x1="400" y1="0" x2="400" y2="360"/>
+    <line x1="600" y1="0" x2="600" y2="360"/>
+    <line x1="800" y1="0" x2="800" y2="360"/>
+    <line x1="1000" y1="0" x2="1000" y2="360"/>
+  </g>
+  <rect width="1200" height="360" fill="url(#fade)"/>
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0d1117" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e3b341"/>
+      <stop offset="1" stop-color="#e3b341" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Divider between left text block and right flow -->
+  <line x1="600" y1="40" x2="600" y2="320" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ============ Left: title block ============ -->
+  <g font-family="Segoe UI, -apple-system, Arial, sans-serif">
+    <text x="40" y="92" font-size="76" font-weight="700" fill="#e6edf3" letter-spacing="1">PaperForge</text>
+
+    <text x="42" y="136" font-family="Consolas, Menlo, monospace" font-size="22" font-weight="600" fill="#e3b341" letter-spacing="2">ZOTERO&#8594;AI AGENT&#8594;OBSIDIAN</text>
+
+    <!-- taglines -->
+    <g font-size="26" font-weight="600" fill="#e6edf3">
+      <rect x="42" y="170" width="10" height="10" fill="#e3b341"/>
+      <text x="64" y="180">TRACEABLE PAPER READING</text>
+    </g>
+    <g font-size="26" font-weight="600" fill="#e6edf3">
+      <rect x="42" y="208" width="10" height="10" fill="#e3b341"/>
+      <text x="64" y="218">EVIDENCE REVIEW</text>
+    </g>
+    <g font-size="26" font-weight="600" fill="#e6edf3">
+      <rect x="42" y="246" width="10" height="10" fill="#e3b341"/>
+      <text x="64" y="256">LOCAL-FIRST</text>
+    </g>
+
+    <text x="42" y="306" font-size="17" fill="#8b949e">Claims, evidence, limitations and source locations stay explicit.</text>
+  </g>
+
+  <!-- ============ Right: abstract flow ============ -->
+  <!-- source locator rail -->
+  <line x1="648" y1="46" x2="648" y2="316" stroke="#e3b341" stroke-width="2"/>
+  <g stroke="#e3b341" stroke-width="1.5">
+    <line x1="644" y1="70" x2="652" y2="70"/>
+    <line x1="644" y1="122" x2="652" y2="122"/>
+    <line x1="644" y1="174" x2="652" y2="174"/>
+    <line x1="644" y1="226" x2="652" y2="226"/>
+    <line x1="644" y1="278" x2="652" y2="278"/>
+  </g>
+
+  <g font-family="Consolas, Menlo, monospace" font-size="15" fill="#8b949e">
+    <text x="656" y="34" letter-spacing="1">SOURCE LOCATORS</text>
+  </g>
+
+  <!-- nodes -->
+  <g font-family="Segoe UI, -apple-system, Arial, sans-serif">
+    <!-- Node 1 -->
+    <rect x="760" y="44" width="380" height="42" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="778" y="70" font-size="17" font-weight="600" fill="#e6edf3">PDF / METADATA</text>
+    <path d="M 760 65 L 836 65" stroke="#3fb950" stroke-width="2" opacity="0.9"/>
+    <path d="M 832 61 L 838 65 L 832 69" fill="none" stroke="#3fb950" stroke-width="2"/>
+
+    <!-- arrow down -->
+    <path d="M 950 86 L 950 98" stroke="#8b949e" stroke-width="2"/>
+    <path d="M 946 94 L 950 100 L 954 94" fill="none" stroke="#8b949e" stroke-width="2"/>
+
+    <!-- Node 2 -->
+    <rect x="760" y="100" width="380" height="42" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="778" y="126" font-size="17" font-weight="600" fill="#e6edf3">CONTROLLED WORKSPACE</text>
+    <circle cx="1104" cy="121" r="7" fill="none" stroke="#3fb950" stroke-width="2"/>
+    <path d="M 1101 121 L 1104 124 L 1108 118" fill="none" stroke="#3fb950" stroke-width="2"/>
+
+    <!-- arrow down -->
+    <path d="M 950 142 L 950 154" stroke="#8b949e" stroke-width="2"/>
+    <path d="M 946 150 L 950 156 L 954 150" fill="none" stroke="#8b949e" stroke-width="2"/>
+
+    <!-- Node 3 -->
+    <rect x="760" y="156" width="380" height="42" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="778" y="182" font-size="17" font-weight="600" fill="#e6edf3">AGENT ANALYSIS</text>
+    <text x="1104" y="182" font-size="13" fill="#8b949e">deep / screen / recall</text>
+
+    <!-- arrow down -->
+    <path d="M 950 198 L 950 210" stroke="#8b949e" stroke-width="2"/>
+    <path d="M 946 206 L 950 212 L 954 206" fill="none" stroke="#8b949e" stroke-width="2"/>
+
+    <!-- Node 4 -->
+    <rect x="760" y="212" width="380" height="42" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="778" y="238" font-size="17" font-weight="600" fill="#e6edf3">SOURCE / EVIDENCE REVIEW</text>
+    <path d="M 1100 230 L 1108 238 L 1100 246" fill="none" stroke="#3fb950" stroke-width="2"/>
+    <path d="M 1092 238 L 1100 238" stroke="#3fb950" stroke-width="2"/>
+
+    <!-- arrow down -->
+    <path d="M 950 254 L 950 266" stroke="#8b949e" stroke-width="2"/>
+    <path d="M 946 262 L 950 268 L 954 262" fill="none" stroke="#8b949e" stroke-width="2"/>
+
+    <!-- Node 5 -->
+    <rect x="760" y="268" width="380" height="42" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="778" y="294" font-size="17" font-weight="600" fill="#e6edf3">OBSIDIAN KNOWLEDGE</text>
+    <rect x="1096" y="280" width="8" height="8" fill="#e3b341"/>
+    <rect x="1096" y="290" width="8" height="8" fill="#e3b341"/>
+    <rect x="1106" y="280" width="8" height="8" fill="#e3b341"/>
+    <rect x="1106" y="290" width="8" height="8" fill="#e3b341"/>
+  </g>
+
+  <!-- bottom hint -->
+  <text x="40" y="342" font-family="Consolas, Menlo, monospace" font-size="14" fill="#484f58">MIT licensed &#183; Windows verified &#183; local-first data flow</text>
+</svg>

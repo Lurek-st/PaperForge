@@ -753,7 +753,32 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def configure_stdio_safety() -> None:
+    """Make stdout/stderr resilient to non-UTF-8 pipe encodings (e.g. Windows cp1252).
+
+    PaperForge prints Chinese text (paper titles, workspace paths, language
+    settings). On Windows, non-interactive stdout/stderr often use a legacy
+    locale encoding such as cp1252, which cannot encode CJK characters and
+    raises UnicodeEncodeError. We only relax the error handler to
+    'backslashreplace' so unencodable characters degrade to an ASCII escape
+    instead of crashing the CLI. The stream encoding itself is left untouched
+    so callers that decode with the system locale keep working.
+
+    Best-effort only: streams that do not support reconfigure() (for example
+    StringIO in tests, or wrapped streams) are left as-is.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(errors="backslashreplace")
+        except (TypeError, ValueError, OSError):
+            continue
+
+
 def main(argv: list[str] | None = None) -> int:
+    configure_stdio_safety()
     parser = build_parser()
     args = parser.parse_args(argv)
     return args.func(args)
