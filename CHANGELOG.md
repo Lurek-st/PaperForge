@@ -1,5 +1,27 @@
 # Changelog / 更新日志
 
+## 0.3.5 - Public Discovery And Windows CLI Robustness
+
+中文：
+- 新增英文 canonical README 与独立简体中文 README，并加入统一 PaperForge Hero 与 Social Preview 资产。
+- 正式采用 MIT License，并新增贡献指南（CONTRIBUTING.md）与 Issue 模板。
+- 增加 GitHub Topics、repository description 与 Discussions，提高项目可发现性和社区反馈入口。
+- 新增 GitHub Actions CI，在 Windows / Ubuntu × Python 3.9 / 3.14 上运行完整测试矩阵。
+- 修复 Windows 非 UTF-8 stdout/stderr pipe 环境下输出中文时可能触发 UnicodeEncodeError 导致 CLI 崩溃的问题；现在无法编码的字符会安全降级为 backslash escape，而不会改变原始 stream encoding。
+- 修复 Python 3.9 测试收集兼容性，并增加 non-UTF-8 stdio regression test。
+- Quick Start 现在要求使用 `ingest-zotero` 实际打印出的 `paper_id`，不再把 `EXAMPLE123` 描述为预置可运行数据。
+- 测试总数提升为 53。
+
+English:
+- Added English canonical README and independent Simplified Chinese README, plus consistent PaperForge hero and social-preview assets.
+- Adopted the MIT License and added contribution guidance (CONTRIBUTING.md) and issue templates.
+- Added repository topics, description, and Discussions for discoverability and community feedback.
+- Added GitHub Actions CI across Windows / Ubuntu and Python 3.9 / 3.14.
+- Fixed a Windows CLI robustness issue where Chinese output could raise UnicodeEncodeError when stdout/stderr used a non-UTF-8 pipe encoding; unencodable characters now degrade safely via backslash escaping without forcing a different stream encoding.
+- Fixed Python 3.9 test collection compatibility and added a regression test for non-UTF-8 stdio.
+- Corrected Quick Start onboarding to use real paper IDs emitted by `ingest-zotero` instead of implying `EXAMPLE123` is preloaded sample data.
+- Automated test suite now contains 53 tests.
+
 ## 0.3.4 - Titled Obsidian Notes And Unicode-Safe Zotero Authors
 
 中文：
