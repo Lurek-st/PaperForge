@@ -1,218 +1,221 @@
+<p align="right">
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
+  <img src="assets/paperforge-hero.svg" alt="PaperForge — Traceable paper reading" width="100%">
+</p>
+
 # PaperForge
 
-面向 Zotero 文献库的论文深度分析工作流，将 PDF 与标准元数据组织为可追溯的分析工作区，并导出到 Obsidian 形成长期知识网络。
+**PaperForge is a local-first Zotero → AI Agent → Obsidian workflow for traceable academic paper reading, structured evidence review, and long-term research knowledge management.**
 
-核心链路：
+It is **not** a generic paper summarizer. It builds a controlled reading workspace where claims, evidence, limitations, source locations, transfer hypotheses, and recall are kept explicit.
+
+## Workflow
 
 ```text
 Zotero
-  保存 PDF 与标准元数据
+  (source of truth for PDF + standard metadata)
         ↓
 PaperForge
-  建立可追溯的分析工作区
+  (controlled work package + analysis workspace)
         ↓
 Codex / Agent
-  阅读 PDF，填写结构化分析与证据审查
+  (reads PDF, fills structured analysis with source locators)
         ↓
 PaperForge
-  导出到用户自己的 Obsidian Vault
+  (validates structure + completeness, exports to Obsidian)
+        ↓
+Obsidian
+  (long-term knowledge network, personal annotations, links)
 ```
 
-> PaperForge 不是“自动替你读完所有论文并保证结论正确”的工具。
-> 它的作用是建立稳定工作区、约束分析结构、保存证据链，并把深度阅读结果沉淀为长期知识资产。
+PaperForge keeps four properties explicit at every step:
 
-## 目录
+- **Local-first** — your PDFs, workspace, Profile, and Obsidian Vault stay on your own disk. Nothing is auto-uploaded to GitHub.
+- **Traceable** — every key claim carries a source locator back to the PDF (page, section, table, figure, experiment, or an explicit `Unknown`).
+- **Source-located** — author claims, paper facts, and PaperForge judgment are recorded as separate rows, never merged into one summary.
+- **Evidence-aware** — placeholder language and gap markers (`paper_not_reported`, `not_verified_in_alpha`, `unavailable_without_repo_check`, `unknown_from_pdf_only`) prevent incomplete work from looking complete.
 
-- [项目是什么](#项目是什么)
-- [适合谁使用](#适合谁使用)
-- [核心工作流](#核心工作流)
-- [功能边界与数据安全](#功能边界与数据安全)
-- [安装前准备](#安装前准备)
-- [下载与安装](#下载与安装)
-- [首次配置](#首次配置)
-- [配置数据目录](#配置数据目录)
-- [配置 Zotero](#配置-zotero)
-- [配置 Obsidian](#配置-obsidian)
-- [配置个人 Research Profile](#配置个人-research-profile)
-- [配置输出语言](#配置输出语言)
-- [最小可用流程](#最小可用流程)
-- [使用 Codex / Agent 执行深度分析](#使用-codex--agent-执行深度分析)
-- [Obsidian 输出结构与阅读顺序](#obsidian-输出结构与阅读顺序)
-- [常用命令](#常用命令)
-- [如何重新运行与保护已有笔记](#如何重新运行与保护已有笔记)
-- [常见问题与故障排查](#常见问题与故障排查)
-- [隐私数据与 Zotero 写入边界](#隐私数据与-zotero-写入边界)
-- [测试与开发](#测试与开发)
-- [项目结构](#项目结构)
-- [贡献与反馈](#贡献与反馈)
+## Why PaperForge
 
-## 项目是什么
+Most AI paper tools produce a summary that looks like a conclusion. PaperForge is built for researchers who need to keep three things separate:
 
-PaperForge 是一个本地优先的 Zotero → PaperForge → Obsidian 工作流。
+1. **What the paper actually says** (paper fact)
+2. **What the authors claim** (author claim)
+3. **What is reasonable to infer or transfer** (PaperForge judgment, grounded in your Research Profile)
 
-三者职责分工：
+PaperForge does not try to replace judgment with a summary. It builds a controlled reading workspace where claims, evidence, limitations, source locations, transfer hypotheses, and recall are kept explicit.
 
-| 组件 | 负责什么 | 不负责什么 |
-|---|---|---|
-| Zotero | 保存 PDF、标准元数据、条目组织 | 不做 PaperForge 式证据审查 |
-| PaperForge | 初始化工作区、组织深度分析、验证结构、导出 Obsidian | 不会自动替你保证论文结论正确 |
-| Codex / Agent | 按 PaperForge 结构读取论文并填写分析文件 | 不是 Zotero 数据库管理器 |
-| Obsidian | 长期知识网络、批注、关联、复习 | 不是原始 PDF 事实来源 |
-
-PaperForge 的核心推理链保持不变：
+The core argument chain is preserved end to end:
 
 ```text
 problem -> prior limitation -> intervention -> mechanism -> evidence -> limitation -> transfer hypothesis -> recall
 ```
 
-## 适合谁使用
+## Who PaperForge is for
 
-适合：
+PaperForge fits if you:
 
-- 已经用 Zotero 管理论文，想把“读过”变成“可复盘、可迁移、可追溯”的研究资产的人
-- 需要把论文阅读结果长期沉淀到 Obsidian 的研究者、工程师、学生、创业者
-- 希望让 Codex / Agent 按固定结构做深读，而不是输出一次性摘要的人
+- already use Zotero to store papers and want reading results to be **revisitable, transferable, and traceable**, not one-shot summaries
+- want to deposit deep reading into a long-term Obsidian knowledge base (researcher, engineer, student, founder)
+- want an Agent to follow a fixed structure for deep reading instead of producing a single free-form summary
+- care about source locators, claim/evidence separation, persistent Profile, and explicit limitations
 
-不太适合：
+PaperForge is **not** a fit if you:
 
-- 只想要一段快速摘要、不需要证据定位与长期笔记沉淀的人
-- 不使用 Zotero 和 Obsidian，也不打算维护本地 Markdown 工作流的人
+- only want a quick paraphrase and do not need source location or long-term notes
+- do not use Zotero or Obsidian and do not plan to maintain a local Markdown workflow
+- expect a system to "read every paper for you" and guarantee correctness
 
-## 核心工作流
+## What PaperForge does
 
-```text
-1. 在 Zotero Desktop 中保存论文和 PDF
-2. PaperForge 读取元数据和 PDF，建立受控工作区
-3. Codex / Agent 按 PaperForge deep 结构填写 analysis/*.md
-4. PaperForge 验证结构完整性并导出到 Obsidian
-5. 用户在 Obsidian 中继续补充批注、链接、实验联想和复习记录
+| Component | Responsibility | Does NOT do |
+|---|---|---|
+| **Zotero** | Source of truth for PDFs, standard metadata, DOI/arXiv, collections, item keys | Run PaperForge-style evidence review |
+| **PaperForge** | Initialize the controlled work package, structure deep analysis, validate completeness, export to Obsidian | Auto-claim that paper conclusions are correct |
+| **Codex / Agent** | Read the PDF, fill structured analysis files following the PaperForge Skill | Manage the Zotero database |
+| **Obsidian** | Long-term Markdown knowledge network, bidirectional links, personal annotations, review | Act as a primary source of PDF facts |
+
+## What PaperForge does NOT do
+
+PaperForge will **not**:
+
+- auto-upload your PDFs, workspace, Obsidian notes, or Profile to GitHub
+- auto-modify Zotero `storage/` or `zotero.sqlite`
+- auto-write tags to Zotero items
+- fabricate full-text analysis when the PDF is missing
+- present deep analysis results as "guaranteed correct"
+- replace expert peer review
+- run any paper's repository code or downloaded scripts automatically
+- weaken source-locator requirements, evidence boundaries, or prompt-injection protections
+
+PaperForge is **local-first**, **traceable**, **source-located**, and **evidence-aware** by design — not by marketing.
+
+## Quick Start
+
+```bash
+git clone https://github.com/Lurek-st/PaperForge.git
+cd PaperForge
+python skills/paper-forge/scripts/paperforge.py doctor
+python skills/paper-forge/scripts/paperforge.py init
+python skills/paper-forge/scripts/paperforge.py ingest-zotero
+python skills/paper-forge/scripts/paperforge.py deep zotero:EXAMPLE123
 ```
 
-## 功能边界与数据安全
+If you do not have a real Zotero item, you can still dry-run the workspace with the anonymized `EXAMPLE123` ID shown in this README. PaperForge will not silently invent content for an ID you never configured.
 
-> 请把“项目源码目录”和“用户自己的论文数据目录”严格分开。
+## Installation
 
-PaperForge 当前明确支持：
+### Prerequisites
 
-- Zotero 作为可选的 PDF 与标准元数据来源
-- PaperForge 工作区初始化、结构化深度分析工作流、证据审查、Obsidian 导出
-- 用户通过 Profile 定义研究偏好与输出语言
+Required:
 
-PaperForge 当前明确不做：
-
-- 不会自动上传你的 PDF、工作区、Obsidian 笔记或 Profile 到 GitHub
-- 不会自动修改 Zotero `storage/` 或 `zotero.sqlite`
-- 不会自动给 Zotero 条目写 tag
-- 不会在 PDF 缺失时伪造全文分析
-- 不会把深度分析结果包装成“绝对正确”的事实
-
-## 安装前准备
-
-必需：
-
-- Git，或能从 GitHub 下载 ZIP
-- Python 3.9 或更高版本
+- Git, or a way to download a ZIP from GitHub
+- Python 3.9 or newer
 - Zotero Desktop
-- 你自己的 Zotero 文献库
+- Your own Zotero library
 - Obsidian
-- 可以运行 Codex / Agent 的环境
+- An environment that can run Codex / Agent (such as Codex CLI or Claude Code)
 
-可选：
+Optional:
 
 - GitHub Desktop
 - VS Code
-- 单独的 Python 虚拟环境
+- A standalone Python virtual environment
 
-当前验证情况：
+Currently verified:
 
-- Windows：已验证
-- macOS / Linux：理论上可用，但请按相同 Python 环境方式配置并自行验证
+- **Windows** — verified
+- **macOS / Linux** — expected to work; configure Python the same way and verify on your own machine
 
-## 下载与安装
+### Get the source
 
-方式 A：使用 Git 克隆
+Option A — Git clone:
 
 ```bash
 git clone https://github.com/Lurek-st/PaperForge.git
 cd PaperForge
 ```
 
-方式 B：下载 ZIP
+Option B — Download ZIP:
 
 ```text
-GitHub 页面 -> Code -> Download ZIP -> 解压 -> 在终端进入 PaperForge 目录
+GitHub page -> Code -> Download ZIP -> extract -> open a terminal in the PaperForge folder
 ```
 
-可选：创建虚拟环境
+### (Optional) Create a virtual environment
 
-Windows：
+Windows:
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 ```
 
-macOS / Linux：
+macOS / Linux:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-当前项目没有额外第三方运行依赖，核心命令可直接执行。
+PaperForge has no third-party runtime dependencies. The core commands work with the Python standard library.
 
-安装后先做环境检查：
+### Verify the environment
 
 ```bash
 python skills/paper-forge/scripts/paperforge.py doctor
 ```
 
-你应看到这类信息：
+You should see output such as:
 
-- PaperForge doctor
-- Workspace root
-- Obsidian vault
-- Zotero Desktop Local API is reachable 或明确的失败原因
+- `PaperForge doctor`
+- `Workspace root`
+- `Obsidian vault`
+- `Zotero Desktop Local API is reachable` or an explicit failure reason
 
-## 首次配置
+## Configuration
 
-建议先执行：
+### First-time setup
 
 ```bash
 python skills/paper-forge/scripts/paperforge.py init
 ```
 
-这会在默认位置创建用户级配置与工作目录。默认情况下，PaperForge 使用：
+This creates the user-level configuration and workspace directories. By default, PaperForge uses:
 
 ```text
-PAPERFORGE_HOME 未设置时：
+PAPERFORGE_HOME not set:
 ~/.paper-forge/
 ```
 
-你也可以通过环境变量指定：
+You can override the location with:
 
 ```text
 PAPERFORGE_HOME=<your-paperforge-data-directory>
 ```
 
-## 配置数据目录
-
-请确保以下目录分离：
+### Keep these directories separate
 
 ```text
-<project-root>/PaperForge
-<your-paperforge-data-directory>
-<your-zotero-data-directory>
-<your-obsidian-vault>
+<project-root>/PaperForge            <-- this repository
+<your-paperforge-data-directory>     <-- controlled workspace
+<your-zotero-data-directory>         <-- owned by Zotero
+<your-obsidian-vault>                <-- owned by you
 ```
 
-推荐结构：
+Recommended layout:
 
 ```text
 <project-root>/PaperForge
 ├── skills/
 ├── docs/
 ├── tests/
+├── profile.example.md
+├── paperforge-config.example.yaml
+├── CHANGELOG.md
 └── README.md
 
 <your-paperforge-data-directory>
@@ -228,194 +231,192 @@ PAPERFORGE_HOME=<your-paperforge-data-directory>
 └── obsidian-vault/
 ```
 
-配置模板见：
+Configuration templates:
 
 - [paperforge-config.example.yaml](paperforge-config.example.yaml)
 - [skills/paper-forge/assets/default-config.yaml](skills/paper-forge/assets/default-config.yaml)
 
-用户级配置文件位置：
+User-level config lives at:
 
 ```text
 ~/.paper-forge/config.yaml
 ```
 
-或：
+or:
 
 ```text
 <PAPERFORGE_HOME>/config.yaml
 ```
 
-关键配置项：
+Key configuration fields:
 
-| 配置项 | 作用 |
+| Field | Purpose |
 |---|---|
-| `zotero.data_directory` | 你自己的 Zotero 数据目录 |
-| `workspace.root` | PaperForge 用户数据目录下的 workspace 根目录 |
-| `obsidian.vault_path` | 你自己的 Obsidian Vault 路径 |
-| `language.default_output_language` | deep 分析的默认语言偏好 |
-| `language.obsidian_note_language` | Obsidian 文件名、页面标题、导航语言 |
+| `zotero.data_directory` | Path to your own Zotero data directory |
+| `workspace.root` | PaperForge workspace root inside your user data directory |
+| `obsidian.vault_path` | Path to your own Obsidian Vault |
+| `language.default_output_language` | Default language for `deep` analysis |
+| `language.obsidian_note_language` | Language for Obsidian filenames, page titles, and navigation |
 
-## 配置 Zotero
+## Zotero integration
 
-PaperForge 当前通过 Zotero Local API 读取数据。
+PaperForge reads Zotero data through the Zotero Local API. This path is **read-only**:
 
-这条链路当前只读：
+- read paper metadata
+- locate PDF attachments
+- build a PaperForge work package
 
-- 读取论文元数据
-- 查找 PDF 附件
-- 建立 PaperForge 工作区
+It will **not**:
 
-它不会：
+- auto-modify Zotero local items
+- auto-write tags to Zotero items
+- auto-rewrite Zotero collections
 
-- 自动修改 Zotero 本地条目
-- 自动给 Zotero 条目写 tag
-- 自动重写 Zotero collection
+Suggested setup:
 
-建议配置步骤：
+1. Install and start Zotero Desktop.
+2. Create a `PaperForge Inbox` collection in Zotero, or use your own collection name in the config.
+3. Use the Zotero Connector to save papers and PDFs.
+4. Run:
 
-1. 安装并启动 Zotero Desktop。
-2. 在 Zotero 中创建 `PaperForge Inbox` collection，或在配置里使用你自己的 collection 名。
-3. 用 Zotero Connector 保存论文与 PDF。
-4. 运行：
+   ```bash
+   python skills/paper-forge/scripts/paperforge.py doctor
+   ```
 
-```bash
-python skills/paper-forge/scripts/paperforge.py doctor
-```
+   On success you should see:
 
-如果成功，你应看到：
+   ```text
+   Zotero Desktop Local API is reachable.
+   ```
 
-```text
-Zotero Desktop Local API is reachable.
-```
+Common failure causes:
 
-常见失败原因：
+- Zotero Desktop is not running
+- Local API is disabled
+- Local port is unreachable
+- The item has no PDF
+- The collection name in the config does not match Zotero
 
-- Zotero Desktop 没有启动
-- Local API 不可用
-- 本地端口不可达
-- 条目没有 PDF
-- 配置中的 collection 名与实际不一致
+## Obsidian integration
 
-## 配置 Obsidian
-
-Obsidian 是 PaperForge 的长期知识网络输出端。
-
-你需要在配置中提供自己的 Vault 路径：
+Obsidian is the long-term knowledge network destination of PaperForge. You must provide your own Vault path in the configuration:
 
 ```text
 obsidian:
   vault_path: "<your-obsidian-vault>"
 ```
 
-PaperForge 只会向这个位置导出。
+PaperForge only writes to that location.
 
-保护策略：
+Protection policies:
 
-- 已有笔记默认不覆盖
-- 发现旧版 `00.md` 到 `05.md` 时默认跳过并提示
-- 发现不同语言版本的现有标题文件时默认跳过，避免静默生成重复页面
+- Existing notes are not overwritten by default
+- Legacy `00.md` through `05.md` archives are detected and skipped by default
+- Different-language title variants are not silently duplicated
 
-## 配置个人 Research Profile
+## Research Profile
 
-公开仓库提供模板：
+Templates are provided in the public repository:
 
 - [profile.example.md](profile.example.md)
 - [skills/paper-forge/assets/profile-template.md](skills/paper-forge/assets/profile-template.md)
 
-真实使用的 Profile 文件位置：
+The real, active Profile lives outside the repo at:
 
 ```text
 ~/.paper-forge/profile.md
 ```
 
-或：
+or:
 
 ```text
 <PAPERFORGE_HOME>/profile.md
 ```
 
-创建方式 1：直接复制模板
+Option 1 — copy the template directly:
+
+Windows:
 
 ```bash
 copy profile.example.md %USERPROFILE%\.paper-forge\profile.md
 ```
 
-macOS / Linux：
+macOS / Linux:
 
 ```bash
 mkdir -p ~/.paper-forge
 cp profile.example.md ~/.paper-forge/profile.md
 ```
 
-创建方式 2：使用初始化脚本
+Option 2 — use the init script:
 
 ```bash
 python skills/paper-forge/scripts/init_profile.py
 ```
 
-Profile 会影响：
+The Profile affects:
 
-- deep 分析时强调哪些问题
-- transfer analysis 关注哪些工程或研究约束
-- 默认输出语言
-- Obsidian 标题与文件名语言
-- 输出详略偏好
+- which problems the `deep` analysis emphasizes
+- which engineering or research constraints the transfer analysis focuses on
+- the default output language
+- the language of Obsidian titles and filenames
+- the preferred level of detail
 
-建议字段：
+Recommended fields:
 
-| 字段 | 作用 |
+| Field | Purpose |
 |---|---|
-| `default_output_language` | deep 分析默认语言：`auto` / `zh` / `en` / `bilingual` |
-| `obsidian_note_language` | Obsidian 文件名、标题、导航语言 |
-| `preferred_detail_level` | 输出详略偏好 |
-| `Research Interests` | 你长期关心的主题 |
-| `Priority Questions` | 评估论文时最重要的问题 |
-| `Reliability And Transfer Priorities` | 工程稳定性、可复现性、部署约束等 |
+| `default_output_language` | `deep` analysis default: `auto` / `zh` / `en` / `bilingual` |
+| `obsidian_note_language` | Obsidian filename, title, and navigation language |
+| `preferred_detail_level` | Detail-level preference |
+| `Research Interests` | Long-running topics you care about |
+| `Priority Questions` | The questions that matter most when evaluating a paper |
+| `Reliability And Transfer Priorities` | Engineering stability, reproducibility, deployment constraints, etc. |
 
-不要写入：
+Do **not** write to your Profile:
 
-- 密码
-- Token
-- API Key
-- 身份证件
-- 地址
-- 与论文分析无关的个人隐私
+- passwords
+- tokens
+- API keys
+- ID documents
+- addresses
+- any personal privacy unrelated to paper analysis
 
-## 配置输出语言
+## Language behavior
 
-PaperForge 现在支持四种语言模式：
+PaperForge supports four language modes:
 
-| 模式 | deep 分析语言 | Obsidian 文件名 / 标题 / 导航 |
+| Mode | `deep` analysis language | Obsidian filename / title / navigation |
 |---|---|---|
-| `zh` | 中文 | 中文 |
-| `en` | 英文 | 英文 |
-| `bilingual` | 中英文对照 | 中英文对照 |
-| `auto` | 自动 | 自动 |
+| `zh` | Chinese | Chinese |
+| `en` | English | English |
+| `bilingual` | Chinese + English | Chinese + English |
+| `auto` | Auto-detect | Auto-detect |
 
-当前优先级：
+Priority:
 
 ```text
-CLI 显式参数
+CLI explicit flag
 >
 profile.md
 >
 config.yaml
 >
-auto 的回退规则
+auto fallback rules
 ```
 
-当前 `auto` 规则：
+`auto` rules:
 
-- deep 分析语言：若没有更明确设置，回退到配置中的 `fallback_output_language`
-- Obsidian note 语言：若仍是 `auto`，跟随已解析出的 deep 输出语言；若仍无法确定，则回退到英文
+- `deep` analysis language: if no more specific setting, fall back to `fallback_output_language` in config
+- Obsidian note language: if still `auto`, follow the resolved `deep` output language; if still unresolved, fall back to English
 
-CLI 覆盖示例：
+CLI override example:
 
 ```bash
 python skills/paper-forge/scripts/paperforge.py export-obsidian zotero:EXAMPLE123 --language zh --obsidian-language bilingual
 ```
 
-对应的 Obsidian 文件名示例：
+Resulting Obsidian filename examples:
 
 ```text
 zh:
@@ -428,82 +429,15 @@ bilingual:
 01 - 论文定位、旧路径局限与真实贡献 | Problem, Prior Limitation, Actual Contribution.md
 ```
 
-## 最小可用流程
+## `screen` / `deep` / `recall`
 
-下面是一套不依赖真实私人数据的最小流程。
+PaperForge uses exactly three reading modes:
 
-1. 检查环境
+- `screen` — quick triage to decide whether a paper deserves deep reading
+- `deep` — full traceable analysis, structural validation, completeness check, optional Obsidian export
+- `recall` — Feynman-style active recall inside the same Skill
 
-```bash
-python skills/paper-forge/scripts/paperforge.py doctor
-```
-
-目的：
-
-- 确认工作区目录可写
-- 确认 Zotero Local API 是否可达
-- 确认 Obsidian Vault 路径是否可用
-
-2. 从 Zotero 读取条目
-
-```bash
-python skills/paper-forge/scripts/paperforge.py ingest-zotero
-```
-
-成功后应看到：
-
-- `Paper package: ...`
-- `paper_id: zotero:...`
-
-如果你没有现成 Zotero 条目，也可以用匿名化 metadata JSON 手动导入。
-
-3. 初始化核心分析工作区
-
-```bash
-python skills/paper-forge/scripts/paperforge.py init-workspace zotero:EXAMPLE123 --language zh
-```
-
-成功后应看到：
-
-- `PaperForge core workspace: ...`
-- `status: analysis_workspace_ready`
-
-4. 使用 Codex / Agent 填充 deep 分析文件
-
-参考提示词：
-
-```text
-使用 PaperForge deep 工作流分析 zotero:EXAMPLE123。
-读取 PDF，按 Profile 与选定语言填充 analysis/*.md。
-所有关键结论必须附带可追溯证据位置。
-区分论文事实、作者主张与 PaperForge 判断。
-```
-
-5. 运行 deep 校验并导出
-
-```bash
-python skills/paper-forge/scripts/paperforge.py deep zotero:EXAMPLE123 --obsidian-language zh
-```
-
-如果 deep 分析仍不完整，CLI 会明确报告 `analysis_incomplete`。
-
-如果你只想单独导出已有工作区：
-
-```bash
-python skills/paper-forge/scripts/paperforge.py export-obsidian zotero:EXAMPLE123 --obsidian-language zh
-```
-
-## 使用 Codex / Agent 执行深度分析
-
-当前状态请务必注意：
-
-- `deep` CLI 会创建或复用工作区
-- 会做结构校验与完整性检查
-- 会在合适时导出 Obsidian
-
-但它不会自己完成论文语义分析。
-
-真正的语义深读仍需要你在 Codex / Agent 中执行 PaperForge deep 工作流，填写这些文件：
+`deep` does **not** itself perform the semantic analysis. It creates or reuses the workspace, runs structural validation, runs completeness checks, and exports to Obsidian when the analysis is filled. The actual semantic deep reading is performed by Codex / Agent following the PaperForge Skill, which fills these files:
 
 ```text
 analysis/01_triage.md
@@ -513,11 +447,23 @@ analysis/04_mechanism.md
 analysis/05_evidence_audit.md
 analysis/06_transfer_analysis.md
 analysis/07_final_brief.md
+learning/08_recall_log.md
 ```
 
-## Obsidian 输出结构与阅读顺序
+Reference prompt for the Agent:
 
-示例结构：
+```text
+Use the PaperForge deep workflow to analyze zotero:EXAMPLE123.
+Read the PDF, fill analysis/*.md according to the Profile and selected language.
+Every key conclusion must carry a traceable source locator.
+Separate paper facts, author claims, and PaperForge judgment.
+```
+
+A reference example end-to-end transcript is provided in [docs/DEMO_TRANSCRIPT.md](docs/DEMO_TRANSCRIPT.md).
+
+## Obsidian output structure and reading order
+
+Example layout:
 
 ```text
 <your-obsidian-vault>/
@@ -533,183 +479,75 @@ analysis/07_final_brief.md
         └── paperforge-manifest.json
 ```
 
-推荐阅读顺序：
+Recommended reading order:
 
 ```text
-主页
+home note
 → 01
 → 02
 → 03
 → 04
 → 05
-需要查看来源、元数据、PDF 定位时，再读 00
+read 00 only when you need source, metadata, or PDF location
 ```
 
-各文件回答什么问题：
+What each file answers:
 
-| 文件 | 回答什么 | 何时读 |
+| File | Question it answers | When to read it |
 |---|---|---|
-| `00` | 来源、元数据、Zotero 跳转、Profile 快照 | 查来源时 |
-| `01` | 论文在解决什么问题，旧路径为什么不够 | 刚开始读 |
-| `02` | 方法如何工作，因果链是什么 | 机制梳理 |
-| `03` | 证据是否真的支持主张，哪些仍未证 | 证据审查 |
-| `04` | 能否迁移到你的研究或工程场景 | 迁移判断 |
-| `05` | 你是否真的能自己解释清楚 | 复习与 recall |
+| `00` | Source, metadata, Zotero link, Profile snapshot | When you need to verify a source |
+| `01` | What problem the paper solves, why prior work falls short | At the start of a new read |
+| `02` | How the method works, what the causal chain is | For mechanism understanding |
+| `03` | Does evidence really support the claims, what is unproven | For evidence review |
+| `04` | Can this transfer to your own research or engineering scenario | For transfer judgment |
+| `05` | Can you really explain it yourself | For review and recall |
 
-请始终区分：
+Always keep these three categories separated:
 
-- 论文事实：论文明确写了什么、实验展示了什么
-- 作者主张：作者如何解释自己的方法和结果
-- PaperForge 判断：基于证据做出的可信度、迁移性和风险判断
+- **Paper fact** — what the paper actually states, what the experiments actually show
+- **Author claim** — how the authors interpret their own method and results
+- **PaperForge judgment** — credibility, transferability, and risk judgment grounded in evidence
 
-## 常用命令
+## Evidence and source-locator philosophy
 
-```bash
-python skills/paper-forge/scripts/paperforge.py init
-python skills/paper-forge/scripts/paperforge.py doctor
-python skills/paper-forge/scripts/paperforge.py ingest-zotero
-python skills/paper-forge/scripts/paperforge.py init-workspace zotero:EXAMPLE123
-python skills/paper-forge/scripts/paperforge.py deep zotero:EXAMPLE123
-python skills/paper-forge/scripts/paperforge.py export-obsidian zotero:EXAMPLE123
-python skills/paper-forge/scripts/paperforge.py status
-python skills/paper-forge/scripts/paperforge.py reindex
-python skills/paper-forge/scripts/paperforge.py repair-links
-python skills/paper-forge/scripts/init_profile.py
-python -m unittest discover
-```
+PaperForge is opinionated about three boundaries:
 
-## 如何重新运行与保护已有笔记
+1. **Claims are not evidence.** Every claim row in `02_claim_ledger.md` carries a `Source Locator` and a `Direct Evidence` field. If a claim cannot be verified from the available source material, it is marked `Unknown` and the missing piece is named.
+2. **Source locators must be honest.** PaperForge never invents page numbers, figure IDs, table IDs, experiment IDs, source lines, or quotations. When exact PDF pages are unavailable, the locator says `PDF page Unknown` and gives the best available section, figure, table, appendix, DOI, arXiv ID, URL, or HTML locator.
+3. **The Agent's output is not automatically evidence.** PaperForge treats the Agent's draft the same way it treats a paper: a structured reading artifact, not a fact verdict. The user is expected to verify important claims against the original PDF.
 
-默认保护策略：
+These rules exist because PaperForge is a **reading tool**, not a truth engine.
 
-- 不覆盖已有 Obsidian 用户笔记
-- 不自动迁移旧版 `00.md` 到 `05.md`
-- 不因语言切换静默创建重复的一套标题页面
+## Data safety
 
-如果你显式使用 `--force`：
+PaperForge is designed around these safety boundaries:
 
-- 会先创建备份
-- 仍建议先检查 `git status` 和导出目录
+1. Does not auto-upload PDFs, workspace, Obsidian notes, or Profile to GitHub
+2. Users should keep papers, workspace, and Vault outside the repo, or ensure they are git-ignored
+3. Reads Zotero data through the Local API
+4. The Local API path is currently read-only
+5. Does not auto-write tags to Zotero items
+6. Does not fabricate full-text conclusions when the PDF is missing
+7. Critical conclusions still require checking the original PDF, figures, experiment settings, and appendices
+8. Never commit API keys, tokens, private PDFs, personal Profile, or Vault to Git
 
-如果你想导出另一种语言版本：
+The full security model is documented in [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md).
 
-- 最安全的方式是导出到不同 Vault 或不同 paper folder
-- 或先人工迁移 / 归档旧版本再导出
+## Testing
 
-## 常见问题与故障排查
-
-Q1：`doctor` 检查失败怎么办？
-
-- 先看 CLI 输出是路径、写权限还是 Zotero Local API 问题
-- 若是 Zotero 问题，确认 Zotero Desktop 已启动
-- 若是路径问题，检查 `config.yaml` 中 `workspace.root` 和 `obsidian.vault_path`
-
-Q2：Zotero 已启动，但读不到条目怎么办？
-
-- 确认 collection 名与配置一致
-- 确认条目不是 attachment 子条目
-- 重新运行 `doctor`
-
-Q3：条目存在但没有 PDF，为什么不能生成完整分析？
-
-- 因为 PaperForge 不会在 PDF 缺失时伪造全文结论
-- 这类情况会降级为 `metadata_only`
-
-Q4：为什么输出是 `metadata_only`？
-
-- 常见原因是 PDF 缺失或不可访问
-- 检查 Zotero 附件是否真实存在
-
-Q5：为什么 Obsidian 目录没有生成？
-
-- 看 `deep` 是否因为 `analysis_incomplete` 跳过导出
-- 或 `obsidian.vault_path` 配置错误
-
-Q6：为什么已有笔记没有被覆盖？
-
-- 这是默认保护策略
-- PaperForge 优先保护用户手写内容
-
-Q7：如何重新分析同一篇论文？
-
-- 重新运行 `deep`
-- 只会补写缺失内容或在显式 `--force` 时备份后重写
-
-Q8：如何改成中文、英文或中英文对照？
-
-- 在 `profile.md` 中设置 `default_output_language` 与 `obsidian_note_language`
-- 或在 CLI 中使用 `--language` / `--obsidian-language`
-
-Q9：如何修改自己的 Research Profile？
-
-- 直接编辑 `~/.paper-forge/profile.md`
-- 修改后，新的 deep / export 会读取新的偏好
-
-Q10：为什么文件名是“编号 + 主题”？
-
-- 为了保证 Obsidian 左侧文件树可读，同时保留固定排序
-
-Q11：我可以直接编辑 Obsidian 文件吗？
-
-- 可以
-- 但请理解之后重新导出时，PaperForge 会优先保护已有内容
-
-Q12：如何避免把论文、PDF 和笔记上传到 GitHub？
-
-- 不要把这些数据放在项目源码目录内
-- 本仓库 `.gitignore` 已忽略常见用户数据目录、PDF、Profile 和 Vault 输出
-
-Q13：PaperForge 会不会自动修改我的 Zotero 标签？
-
-- 不会
-- 当前 Zotero Local API 链路只读
-
-Q14：作者名乱码或非英文名字显示异常怎么办？
-
-- 当前实现会显式按 UTF-8 / Unicode 安全方式处理
-- 仅在字符串明显像 mojibake 时才尝试保守恢复
-- 若仍异常，请保留最小复现实例并提交 Issue
-
-Q15：Codex / Agent 没有正确填充 analysis 文件怎么办？
-
-- 检查提示词是否明确要求“附带 source locator”
-- 检查 PDF 是否可访问
-- 检查 `analysis/*.md` 是否仍是模板占位符
-
-更多排查可见：
-
-- [docs/troubleshooting.md](docs/troubleshooting.md)
-- [docs/workflow.md](docs/workflow.md)
-- [docs/obsidian-structure.md](docs/obsidian-structure.md)
-
-## 隐私数据与 Zotero 写入边界
-
-PaperForge 的安全边界：
-
-1. 不会自动向 GitHub 上传用户 PDF、工作区、Obsidian 笔记或 Profile
-2. 用户应把论文、工作区、Vault 放在仓库之外，或确保它们被 Git 忽略
-3. 当前通过 Zotero Local API 读取数据
-4. 当前 Local API 链路只读
-5. 不会自动给 Zotero 条目写 tag
-6. PDF 缺失时不会伪造全文结论
-7. 关键结论仍应回查原 PDF、图表、实验设置和附录
-8. 不要把 API Key、Token、私人 PDF、个人 Profile 或 Vault 提交到 Git
-
-## 测试与开发
-
-运行测试：
+Run the automated test suite:
 
 ```bash
-python -m unittest discover
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
-提交代码前建议至少确认：
+Before committing, please confirm:
 
-- CLI 主要命令能运行
-- `python -m unittest discover` 通过
-- 没有把 PDF、`.env`、Profile、Vault 输出或用户工作区加入 Git
+- The main CLI commands run correctly
+- `python -m unittest discover -s tests -p "test_*.py"` passes
+- You have not added PDFs, `.env`, Profile, Vault output, or user workspace to Git
 
-## 项目结构
+## Project structure
 
 ```text
 PaperForge/
@@ -717,33 +555,52 @@ PaperForge/
 │   └── paper-forge/
 ├── docs/
 ├── tests/
+├── assets/
+│   ├── paperforge-hero.svg
+│   ├── social-preview.svg
+│   └── social-preview.png
 ├── profile.example.md
 ├── paperforge-config.example.yaml
 ├── CHANGELOG.md
+├── LICENSE
 └── README.md
 ```
 
-## 贡献与反馈
+## Contributing and issues
 
-欢迎提交：
+Contributions, bug reports, documentation fixes, and reproducible test cases are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- Issue
-- 文档改进
-- 测试补充
-- CLI / 导出 / 结构验证改进
+Especially welcome:
 
-贡献时请不要提交：
+- installation fixes
+- Zotero compatibility reports
+- Obsidian export issues
+- source-locator and evidence-traceability improvements
+- cross-platform verification
+- reproducible bug reports
+- tests
+- documentation
 
-- 私人 PDF
-- 真实 Zotero 数据
-- 个人 Profile
+Please do not commit:
+
+- private PDFs
+- real Zotero data
+- personal Profile
 - Obsidian Vault
 - `.env`
-- Token、API Key、凭据文件
+- tokens, API keys, or credential files
 
-相关文档：
+Further reading:
 
 - [CHANGELOG.md](CHANGELOG.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
 - [docs/workflow.md](docs/workflow.md)
 - [docs/obsidian-structure.md](docs/obsidian-structure.md)
 - [docs/troubleshooting.md](docs/troubleshooting.md)
+- [docs/LIMITATIONS.md](docs/LIMITATIONS.md)
+
+## License
+
+PaperForge is released under the MIT License.
+
+See [LICENSE](LICENSE).

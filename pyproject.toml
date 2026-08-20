@@ -1,7 +1,7 @@
 [project]
 name = "paper-forge"
-version = "0.3.0"
-description = "A single personal-first Codex Skill for traceable academic paper reading."
+version = "0.3.4"
+description = "Local-first Zotero-to-Agent-to-Obsidian workflow for traceable academic paper reading."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
