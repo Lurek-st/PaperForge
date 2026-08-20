@@ -101,10 +101,32 @@ cd PaperForge
 python skills/paper-forge/scripts/paperforge.py doctor
 python skills/paper-forge/scripts/paperforge.py init
 python skills/paper-forge/scripts/paperforge.py ingest-zotero
-python skills/paper-forge/scripts/paperforge.py deep zotero:EXAMPLE123
 ```
 
-If you do not have a real Zotero item, you can still dry-run the workspace with the anonymized `EXAMPLE123` ID shown in this README. PaperForge will not silently invent content for an ID you never configured.
+`ingest-zotero` prints the real paper ID for each imported item:
+
+```text
+paper_id: zotero:<key>
+```
+
+Copy the actual `paper_id` printed by the CLI and run `deep` against it:
+
+```bash
+python skills/paper-forge/scripts/paperforge.py deep zotero:<key>
+```
+
+`deep` requires a real work package produced by `ingest-zotero` (or by the manual `--metadata` import below). It never invents content for an ID that was never imported.
+
+If you do not have a Zotero library yet, PaperForge supports manual import from a metadata JSON (exported from Zotero or prepared by hand), with an optional PDF:
+
+```bash
+python skills/paper-forge/scripts/paperforge.py ingest-zotero --metadata path/to/metadata.json [--pdf path/to/source.pdf]
+python skills/paper-forge/scripts/paperforge.py deep --metadata path/to/metadata.json [--pdf path/to/source.pdf]
+```
+
+Manual imports also print a derived `paper_id` (for example `paper_id: doi:10.1000/example`) that you can pass to `deep`.
+
+> **Note:** Examples such as `zotero:EXAMPLE123` elsewhere in this documentation are illustrative placeholders. They are not preloaded sample data — running them as-is fails with `No PaperForge work package found for <target>`.
 
 ## Installation
 
@@ -413,6 +435,7 @@ auto fallback rules
 CLI override example:
 
 ```bash
+# zotero:EXAMPLE123 is an illustrative placeholder; use the real paper_id printed by ingest-zotero
 python skills/paper-forge/scripts/paperforge.py export-obsidian zotero:EXAMPLE123 --language zh --obsidian-language bilingual
 ```
 
@@ -450,7 +473,7 @@ analysis/07_final_brief.md
 learning/08_recall_log.md
 ```
 
-Reference prompt for the Agent:
+Reference prompt for the Agent (`zotero:EXAMPLE123` is an illustrative placeholder — substitute the real paper ID):
 
 ```text
 Use the PaperForge deep workflow to analyze zotero:EXAMPLE123.

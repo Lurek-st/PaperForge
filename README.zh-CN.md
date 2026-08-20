@@ -101,10 +101,32 @@ cd PaperForge
 python skills/paper-forge/scripts/paperforge.py doctor
 python skills/paper-forge/scripts/paperforge.py init
 python skills/paper-forge/scripts/paperforge.py ingest-zotero
-python skills/paper-forge/scripts/paperforge.py deep zotero:EXAMPLE123
 ```
 
-如果你暂时没有真实 Zotero 条目，也可以用本 README 中的匿名 ID `EXAMPLE123` 演练工作流。PaperForge 不会为你从未配置的 ID 静默编造内容。
+`ingest-zotero` 成功导入后会为每个条目打印真实的 paper ID：
+
+```text
+paper_id: zotero:<key>
+```
+
+复制 CLI 实际打印出的 `paper_id`，再对真实 ID 运行 `deep`：
+
+```bash
+python skills/paper-forge/scripts/paperforge.py deep zotero:<key>
+```
+
+`deep` 要求有真实的 work package（由 `ingest-zotero` 生成，或通过下面的 `--metadata` 手动导入产生）。PaperForge 不会为从未导入的 ID 编造内容。
+
+如果你暂时没有 Zotero 文献库，PaperForge 支持从 metadata JSON（从 Zotero 导出或手工准备）手动导入，PDF 可选：
+
+```bash
+python skills/paper-forge/scripts/paperforge.py ingest-zotero --metadata path/to/metadata.json [--pdf path/to/source.pdf]
+python skills/paper-forge/scripts/paperforge.py deep --metadata path/to/metadata.json [--pdf path/to/source.pdf]
+```
+
+手动导入时 CLI 同样会打印派生的 `paper_id`（例如 `paper_id: doi:10.1000/example`），可以传给 `deep`。
+
+> **注意：** 本文档其他位置出现的 `zotero:EXAMPLE123` 只是示例占位符，不是预置的 sample 数据。直接照抄运行会失败，报 `No PaperForge work package found for <target>`。
 
 ## 安装
 
@@ -413,6 +435,7 @@ auto 的回退规则
 CLI 覆盖示例：
 
 ```bash
+# zotero:EXAMPLE123 只是示例占位符；请替换为 ingest-zotero 打印的真实 paper_id
 python skills/paper-forge/scripts/paperforge.py export-obsidian zotero:EXAMPLE123 --language zh --obsidian-language bilingual
 ```
 
@@ -450,7 +473,7 @@ analysis/07_final_brief.md
 learning/08_recall_log.md
 ```
 
-参考提示词：
+参考提示词（`zotero:EXAMPLE123` 只是示例占位符，请替换为真实 paper ID）：
 
 ```text
 使用 PaperForge deep 工作流分析 zotero:EXAMPLE123。
