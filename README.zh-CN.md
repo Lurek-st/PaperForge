@@ -8,6 +8,8 @@
 
 # PaperForge
 
+[![CI](https://github.com/Lurek-st/PaperForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Lurek-st/PaperForge/actions/workflows/ci.yml)
+
 **PaperForge 是一个本地优先的 Zotero → AI Agent → Obsidian 工作流，用于可追溯的论文阅读、结构化证据审查、长期研究知识管理。**
 
 它**不是**一个通用论文摘要器。它建立的是一个**受控阅读工作区**，把论文主张、证据、局限、来源位置、迁移假设、回忆记录都显式分开。

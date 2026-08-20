@@ -8,6 +8,8 @@
 
 # PaperForge
 
+[![CI](https://github.com/Lurek-st/PaperForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Lurek-st/PaperForge/actions/workflows/ci.yml)
+
 **PaperForge is a local-first Zotero → AI Agent → Obsidian workflow for traceable academic paper reading, structured evidence review, and long-term research knowledge management.**
 
 It is **not** a generic paper summarizer. It builds a controlled reading workspace where claims, evidence, limitations, source locations, transfer hypotheses, and recall are kept explicit.
